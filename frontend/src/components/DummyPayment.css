@@ -1,0 +1,50 @@
+
+.card-details {
+  display: block;
+}
+
+.card-details-heading {
+  margin-left: 40px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-family: 'Gill Sans';
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-number {
+  margin-left: 40px;
+  width: 290px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+  margin-top: 0px;
+}
+
+.card-expiry {
+  margin-left: 40px;
+  margin-top: 10px;
+  width: 150px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+}
+
+.card-cvv {
+  margin-left: 5px;
+  margin-top: 10px;
+  width: 135px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+}
+
+.card-name {
+  margin-left: 40px;
+  margin-top: 10px;
+  width: 290px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+  margin-bottom: 20px;
+}

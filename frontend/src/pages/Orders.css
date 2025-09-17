@@ -1,0 +1,73 @@
+.orders-body {
+  font-family: Arial, sans-serif;
+  padding: 0px;
+  margin: 0px;
+  min-height:100vh;
+  width:100%;
+  background-color: white;
+  color:black;
+}
+.order-item-image{
+  width:80px;
+  border-width: 1px;
+  border-color: rgb(165, 164, 164);
+}
+
+.orders-container {
+  max-width: 800px;
+  margin: 0px auto;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.order-heading{
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom:20px;
+  background-color: #fff;
+}
+
+.order-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.order-number-heading{
+    padding-left:0px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding-bottom: 0px;
+}
+
+.ordered-date{
+    font-family: Arial, Helvetica, sans-serif;
+    color:rgb(100, 100, 100);
+    font-weight: 600;
+    font-size: 13px;
+    padding-left: 2px;
+    padding-bottom: 6px;
+}
+
+.items-heading{
+    font-weight: 600;
+}
+
+.order-items {
+  list-style: none;
+  padding: 0;
+}
+
+.order-item {
+  margin-bottom: 5px;
+}

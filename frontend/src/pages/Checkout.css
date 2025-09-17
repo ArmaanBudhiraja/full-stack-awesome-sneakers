@@ -1,0 +1,279 @@
+
+/* Checkout container */
+.checkout-body {
+  min-height: 100vh;   /* covers screen */
+  width: 100vw;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  color: black;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Layout */
+.main-checkout-content {
+  display: flex;
+  width: 100vw;
+}
+
+/* Cart summary */
+.checkout-cart {
+  background: #fff;
+  padding: 20px;
+  margin-top: 150px;
+  margin-right: 20px;
+  border-radius: 12px;
+  /* removed absolute positioning */
+}
+
+.order-summary-text {
+  padding-left: 0px;
+  font-size: 25px;
+  font-weight: bolder;
+  font-family: 'Arial Narrow Bold', sans-serif;
+  letter-spacing: 1px;
+}
+
+.checkout-item-details {
+  display: inline-flex;
+}
+
+.item-name-checkout {
+  width: 250px;
+  font-weight: 600;
+  font-family: 'Gill Sans';
+}
+
+.item-size-checkout {
+  font-size: 13px;
+  color: gray;
+}
+
+.item-price-checkout {
+  font-family: 'Gill Sans';
+}
+
+.total-mrp-checkout-box {
+  display: inline-flex;
+}
+
+.total-mrp-checkout {
+  font-weight: 900;
+  width: 250px;
+}
+
+.total-mrp-amount-checkout {
+  font-family: 'Gill Sans';
+  font-weight: 600;
+}
+
+.platform-checkout-box {
+  display: inline-flex;
+}
+
+.platform-checkout {
+  font-weight: 900;
+  width: 250px;
+}
+
+.platform-amount-checkout {
+  font-family: 'Gill Sans';
+  font-weight: 600;
+}
+
+.final-amount-checkout {
+  display: inline-flex;
+}
+
+.total-amount-text {
+  font-size: 20px;
+  padding: 0px;
+  padding-top: 8px;
+  width: 250px;
+  font-weight: 900;
+}
+
+.total-amount-price {
+  padding: 0px;
+  padding-top: 8px;
+  font-size: 20px;
+  font-family: 'Gill Sans';
+  font-weight: 600;
+}
+
+/* Checkout form */
+.checkout-form {
+  background: #fff;
+  width: 1000px;
+  min-height: 726px;
+  padding: 20px;
+  margin: 0px 0;
+  border-color: white rgb(149, 149, 149) white white;
+  border-width: 1px;
+}
+
+.shipping-text {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.input-values {
+  padding-left: 25px;
+}
+
+.input-value-text {
+  border-width: 1px;
+  border-radius: 5px;
+  padding: 12px;
+  width: 500px;
+  margin: 10px;
+}
+
+.save-address-btn {
+  background-color: rgb(106, 106, 106);
+  color: white;
+  font-weight: 600;
+}
+
+.address {
+  margin-left: 20px;
+}
+
+/* Custom radio buttons */
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid black;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  background: white;
+  position: relative;
+}
+
+input[type="radio"]:checked::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+}
+
+.address-data-name {
+  margin-left: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Gill Sans';
+}
+
+.address-data {
+  margin-left: 21px;
+  font-size: 12px;
+  color: #646464;
+}
+
+.addres-data-phone {
+  font-size: 12px;
+  color: #000000;
+  font-weight: bold;
+}
+
+.add-address-btn {
+  background-color: black;
+  color: white;
+  margin: 20px;
+}
+
+.checkout-item {
+  padding: 8px 0;
+}
+
+.checkout-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+.checkout-form label {
+  display: block;
+  margin: 10px 0;
+}
+
+/* Payment */
+.payment-text {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.card-details {
+  display: block;
+}
+
+.card-details-heading {
+  margin-left: 40px;
+  margin-top: 20px;
+  font-family: 'Gill Sans';
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-number {
+  margin-left: 40px;
+  width: 290px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+}
+
+.card-expiry {
+  margin-left: 40px;
+  margin-top: 10px;
+  width: 150px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+}
+
+.card-cvv {
+  margin-left: 5px;
+  margin-top: 10px;
+  width: 135px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+}
+
+.card-name {
+  margin-left: 40px;
+  margin-top: 10px;
+  width: 290px;
+  padding: 8px;
+  border-width: 1px;
+  border-radius: 7px;
+  margin-bottom: 20px;
+}
+
+/* Place Order button */
+.place-order-btn {
+  margin-top: 10px;
+  margin-bottom: 100px;
+  width: 300px;
+  padding: 12px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.place-order-btn:hover {
+  background-color: #555;
+}

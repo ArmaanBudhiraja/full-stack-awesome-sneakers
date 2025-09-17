@@ -1,0 +1,85 @@
+
+.Body {
+    
+    height:100vh;
+    width: 100vw;
+}
+
+.Navbar_w {
+    background-color: #000000;
+    display: inline-flex;
+    width:100%;
+    padding:30px;
+    padding-left: 150px;
+    align-items:center;
+}
+
+
+.brand_name_w{
+    color:white;
+    font-size: 30px;
+    font-weight: 600;
+    font-family:fantasy;
+    padding-right: 500px;
+}
+.link_w{
+    text-decoration: none;
+    color:white;
+    font-size: 18px;
+    margin-left: 60px;
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;
+    border-radius: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.link_w:hover{
+    color: black;
+    background-color: white;
+    transition: 0.3s;
+}
+.content{
+    background-image: url('src/images/main.jpg');
+    background-size:cover;
+    background-repeat: no-repeat ;
+    height: 87vh;
+    width:100vw;
+    text-align: center;
+}
+.logo{
+    padding-left: 27%;
+    padding-top: 6%;
+    height: 350px;
+}
+.title{
+    font-size: 30px;
+    font-family:monospace;
+    color:rgb(255, 255, 255);
+    font-weight: 900;
+}
+.shop_now{
+    text-decoration: none;
+    color:black;
+    background-color: rgb(255, 255, 255);
+    padding: 15px;
+    font-size: 20px;
+    font-weight: 600;
+    border-radius: 10px;
+    margin-top: 20px;
+    display: inline-block;
+    width:200px;
+}
+.shop_now:hover{
+    background-color: rgb(199, 199, 199);
+    transition: 0.3s;
+    border-color: rgb(199, 199, 199);
+}
+.link_shop{
+    text-decoration: none;
+    color: #000000;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 900;
+}
+.link_shop:hover{
+    color: black;
+}

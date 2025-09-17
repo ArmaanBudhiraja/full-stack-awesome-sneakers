@@ -1,0 +1,70 @@
+.auth-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.auth-popup-box {
+    position: relative;  /* important: close-button positions relative to this */
+    background: white;
+    color: black;
+    padding: 40px 30px 30px 30px;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.close-button {
+    position: absolute;  /* absolute relative to auth-popup-box */
+    top: 10px;
+    right: 10px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: red;
+}
+
+.auth-popup-box h2 {
+    margin-bottom: 20px;
+}
+
+.auth-popup-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 12px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.auth-popup-box button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.auth-popup-box button[type="submit"]:hover {
+    background: #555;
+}
