@@ -1,4 +1,4 @@
-# Visa Payment Portal
+# FullStack Payment Portal
 
 A full-stack e-commerce web application for sneakers, featuring user authentication, shopping cart, checkout with multiple payment methods, and address management.
 
@@ -19,7 +19,7 @@ The project is split into **Frontend** and **Backend** and uses **PostgreSQL** f
 
 ---
 
-## Technologies Used
+# Technologies Used
 
 * **Frontend:** React.js, Vite, Axios, React Router
 * **Backend:** Node.js, Express.js
@@ -28,7 +28,7 @@ The project is split into **Frontend** and **Backend** and uses **PostgreSQL** f
 
 ---
 
-## Features
+# Features
 
 * User authentication and JWT-based authorization
 * Add/remove items in the cart
