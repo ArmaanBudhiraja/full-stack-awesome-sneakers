@@ -83,16 +83,28 @@ cd backend
 npm install
 ```
 
-3. Create a `.env` file with:
+3. Set up the PostgreSQL database:
+
+-Ensure PostgreSQL is installed and running.
+-Create a database named visa_db:
+```bash
+createdb visa_db
+```
+-Import the schema + sample data from the dump file:
+```bash
+psql -U <your_postgres_username> -d visa_db -f backend/db/visa_db_dump.sql
+```
+
+4. Create a `.env` file with:
 
 ```env
-DATABASE_URL="your_postgres_url"
+DATABASE_URL=postgresql://<username>:<password>@localhost:5432/visa_db
 JWT_SECRET=supersecretkey123
 NODE_ENV=development
 PORT=4004
 ```
 
-4. Run the backend server:
+5. Run the backend server:
 
 ```bash
 npm run dev
