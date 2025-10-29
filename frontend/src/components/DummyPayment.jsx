@@ -9,7 +9,6 @@ const DummyPayment = ({ onPaymentSuccess, onPaymentFailure }) => {
   const [processing, setProcessing] = useState(false);
 
   const handlePayment = async () => {
-    // This is the dummy logic. Replace with real API call if needed.
     setProcessing(true);
     setTimeout(() => {
         if (cardNumber.length === 16 && cvv.length === 3) {

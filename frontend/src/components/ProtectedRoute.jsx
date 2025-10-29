@@ -5,7 +5,6 @@ import { AuthContext } from '../context/AuthContext';
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, authLoading } = useContext(AuthContext);
 
-  // ✅ Wait for the auth check to be complete
   if (authLoading) {
     return <div>Loading...</div>; 
   }

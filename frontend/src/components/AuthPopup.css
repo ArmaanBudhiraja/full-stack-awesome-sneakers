@@ -12,7 +12,7 @@
 }
 
 .auth-popup-box {
-    position: relative;  /* important: close-button positions relative to this */
+    position: relative; 
     background: white;
     color: black;
     padding: 40px 30px 30px 30px;
@@ -24,7 +24,7 @@
 }
 
 .close-button {
-    position: absolute;  /* absolute relative to auth-popup-box */
+    position: absolute;  
     top: 10px;
     right: 10px;
     font-size: 28px;

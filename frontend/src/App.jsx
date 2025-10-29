@@ -9,7 +9,7 @@ import Orders from "./pages/Orders";
 import './index.css';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute'; // We'll create this next
+import ProtectedRoute from './components/ProtectedRoute'; 
 
 function App() {
   const { isAuthenticated, logout } = useContext(AuthContext);

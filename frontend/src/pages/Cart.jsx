@@ -6,9 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 
-// The API URL should be consistent across all your API files. 
-// Use the port your backend is currently running on.
-const API_URL = import.meta.env.VITE_API_URL; // Change this if your backend port changes
+
+const API_URL = import.meta.env.VITE_API_URL; 
 
 const Cart = () => {
   const { cartItems, fetchCart, cartLoading } = useContext(AuthContext);
@@ -22,7 +21,7 @@ const Cart = () => {
       await axios.put(`${API_URL}/api/user/cart/${itemId}`, updates, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      await fetchCart(); // Re-fetch to get updated cart from backend
+      await fetchCart(); 
     } catch (error) {
       alert(`Error updating cart: ${error.response?.data?.message || error.message}`);
     }

@@ -1,4 +1,3 @@
-// Popup.jsx (updated)
 import React, { useState, useContext } from "react";
 import HoverImage from "../components/HoverImage";
 import "./Popup.css";
@@ -6,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { addToCart as addToCartAPI } from '../api/cart';
 import { AuthContext } from '../context/AuthContext';
 
-const Popup = ({ product, onClose }) => { // Accept a single 'product' prop
+const Popup = ({ product, onClose }) => {
     const [choice, setChoice] = useState("select");
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
-    const { fetchCart } = useContext(AuthContext); // Get fetchCart from context
+    const { fetchCart } = useContext(AuthContext); 
 
     const increaseQuantity = () => setQuantity(q => q + 1);
     const decreaseQuantity = () => setQuantity(q => (q > 1 ? q - 1 : 1));
@@ -23,7 +22,7 @@ const Popup = ({ product, onClose }) => { // Accept a single 'product' prop
 
         try {
             await addToCartAPI(product.id, quantity, choice);
-            await fetchCart(); // Re-fetch the cart to update the global state
+            await fetchCart(); 
             onClose();
             navigate("/cart");
         } catch (error) {

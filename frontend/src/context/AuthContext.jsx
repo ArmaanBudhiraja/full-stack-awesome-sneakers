@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true); // ✅ New state variable
+  const [authLoading, setAuthLoading] = useState(true); 
   const [cartItems, setCartItems] = useState([]);
   const [cartLoading, setCartLoading] = useState(true);
 
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       fetchCart();
     }
-    setAuthLoading(false); // ✅ Set to false after checking localStorage
+    setAuthLoading(false); 
   }, []);
 
   const fetchCart = async () => {

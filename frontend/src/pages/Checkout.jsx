@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { addAddress, placeOrder, getUserAddresses } from "../api/checkout";
-import DummyPayment from "../components/DummyPayment"; // ✅ Import the new component
+import DummyPayment from "../components/DummyPayment";
 import axios from 'axios';
 import "./Checkout.css";
 

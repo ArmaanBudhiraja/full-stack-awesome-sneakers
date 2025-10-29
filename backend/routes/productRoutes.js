@@ -2,7 +2,6 @@ const express = require('express');
 const pool = require('../db');
 const router = express.Router();
 
-// GET all products
 router.get('/', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM products ORDER BY name ASC');
@@ -13,7 +12,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET a single product by ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {

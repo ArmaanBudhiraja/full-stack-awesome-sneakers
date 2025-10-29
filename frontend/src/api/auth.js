@@ -1,7 +1,5 @@
-// src/api/auth.js (Corrected)
 import axios from 'axios';
 
-// ✅ The API_URL needs the correct prefix
 const API_URL = import.meta.env.VITE_API_URL;
 
 
