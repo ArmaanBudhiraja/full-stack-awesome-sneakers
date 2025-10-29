@@ -65,6 +65,14 @@ h3{
     width:444px;
     border-radius: 0px;;
 }
+.soldout{
+    margin-left: 20px;
+    width:444px;
+    border-radius: 0px;
+    background-color: grey;
+    color:white;
+    cursor:not-allowed;
+}
 #shoe1:hover{
     opacity: 0%;
     src:url('src/images/shoe1_2.avif');

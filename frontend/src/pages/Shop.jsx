@@ -12,12 +12,14 @@ function Shop({ addToCart }){
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [originalProducts, setOriginalProducts] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const productsData = await getProducts();
         setProducts(productsData);
+        setOriginalProducts(productsData)
       } catch (err) {
         setError(err.message);
       } finally {
@@ -26,9 +28,24 @@ function Shop({ addToCart }){
     };
     fetchProducts();
   }, []);
+  
 
   if (loading) return <div>Loading products...</div>;
   if (error) return <div>Error: {error}</div>;
+
+  if (choice === "Recommended") {
+    originalProducts;
+  }else if (choice === "Price_low_to_high") {
+    products.sort((a, b) => a.price - b.price);
+  } else if (choice === "Price_high_to_low") {
+    products.sort((a, b) => b.price - a.price);
+  } else if (choice === "Name_A_Z") {
+    products.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (choice === "Name_Z-A") {
+    products.sort((a, b) => b.name.localeCompare(a.name));
+  } else if (choice === "Newest") {
+    products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
 
   return (
     <div className='Body_S'>
@@ -73,7 +90,11 @@ function Shop({ addToCart }){
                   <br></br>
                   <h4 className='shoe_name'>{product.name}</h4>
                   <h4 className='shoe_price'>₹{product.price}</h4>
-                  <button className='addcart' onClick={() => setActivePopup(product)}>Add To Cart</button>
+                  {product.stock === 0 ? (
+                    <button className='soldout' disabled>Sold Out</button>
+                  ) : (
+                    <button className='addcart' onClick={() => setActivePopup(product)}>Add To Cart</button>
+                  )}
                 </div>
               </div>
             ))}

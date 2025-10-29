@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
 router.get('/cart', authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT ci.id, ci.quantity, ci.size, p.name, p.price, p.image
+      `SELECT ci.id, ci.quantity, ci.size, p.name, p.price, p.image, p.stock
        FROM cart_items ci
        JOIN products p ON ci.product_id = p.id
        WHERE ci.user_id = $1`,
@@ -65,93 +65,186 @@ router.get('/cart', authMiddleware, async (req, res) => {
   }
 });
 
-// Add item to cart
+// Add item to cart + decrease stock
 router.post('/cart', authMiddleware, async (req, res) => {
   const { productId, quantity, size } = req.body;
+  const userId = req.user.id;
+
+  const client = await pool.connect();
   try {
-    const existingItem = await pool.query(
+    await client.query('BEGIN');
+
+    const productResult = await client.query('SELECT stock FROM products WHERE id = $1', [productId]);
+    if (productResult.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const stock = productResult.rows[0].stock;
+    if (stock < quantity) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ message: 'Not enough stock available' });
+    }
+
+    const existingItem = await client.query(
       'SELECT * FROM cart_items WHERE user_id = $1 AND product_id = $2 AND size = $3',
-      [req.user.id, productId, size]
+      [userId, productId, size]
     );
 
     if (existingItem.rows.length > 0) {
-      await pool.query(
+      await client.query(
         'UPDATE cart_items SET quantity = quantity + $1 WHERE id = $2',
         [quantity, existingItem.rows[0].id]
       );
-      return res.status(200).json({ message: 'Item quantity updated in cart' });
+    } else {
+      await client.query(
+        'INSERT INTO cart_items (user_id, product_id, quantity, size) VALUES ($1, $2, $3, $4)',
+        [userId, productId, quantity, size]
+      );
     }
 
-    await pool.query(
-      'INSERT INTO cart_items (user_id, product_id, quantity, size) VALUES ($1, $2, $3, $4)',
-      [req.user.id, productId, quantity, size]
-    );
-    res.status(201).json({ message: 'Item added to cart' });
+    // decrease stock
+    await client.query('UPDATE products SET stock = stock - $1 WHERE id = $2', [quantity, productId]);
+
+    await client.query('COMMIT');
+    res.status(200).json({ message: 'Item added to cart and stock updated' });
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error('Error adding to cart:', err);
     res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    client.release();
   }
 });
 
-// Delete item from cart
-router.delete('/cart/:itemId', authMiddleware, async (req, res) => {
-  const { itemId } = req.params;
-  try {
-    const result = await pool.query(
-      'DELETE FROM cart_items WHERE id = $1 AND user_id = $2 RETURNING *',
-      [itemId, req.user.id]
-    );
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: 'Cart item not found or does not belong to user' });
-    }
-    res.status(200).json({ message: 'Item removed from cart' });
-  } catch (err) {
-    console.error('Error removing item from cart:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Update cart item
+// ✅ Update cart item + update stock
 router.put('/cart/:itemId', authMiddleware, async (req, res) => {
   const { itemId } = req.params;
   const { quantity, size } = req.body;
+  const userId = req.user.id;
+
+  const client = await pool.connect();
+
   try {
-    let query = 'UPDATE cart_items SET ';
-    const queryValues = [];
-    const setClauses = [];
-    let paramIndex = 1;
+    await client.query('BEGIN');
+
+    // Fetch existing cart item
+    const existingItemRes = await client.query(
+      'SELECT * FROM cart_items WHERE id = $1 AND user_id = $2',
+      [itemId, userId]
+    );
+
+    if (existingItemRes.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Cart item not found or not owned by user' });
+    }
+
+    const existingItem = existingItemRes.rows[0];
+    const productId = existingItem.product_id;
+    const oldQuantity = existingItem.quantity;
+
+    // Fetch current stock for that product
+    const productRes = await client.query('SELECT stock FROM products WHERE id = $1', [productId]);
+    if (productRes.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const currentStock = productRes.rows[0].stock;
+
+    // If quantity is changing, update stock accordingly
+    if (quantity !== undefined && quantity !== oldQuantity) {
+      const diff = quantity - oldQuantity; // positive = user increased quantity
+
+      if (diff > 0 && currentStock < diff) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ message: 'Not enough stock available' });
+      }
+
+      // Update stock
+      await client.query('UPDATE products SET stock = stock - $1 WHERE id = $2', [diff, productId]);
+    }
+
+    // Update cart item (quantity or size)
+    let updateFields = [];
+    let values = [];
+    let idx = 1;
 
     if (quantity !== undefined) {
-      setClauses.push(`quantity = $${paramIndex++}`);
-      queryValues.push(quantity);
+      updateFields.push(`quantity = $${idx++}`);
+      values.push(quantity);
     }
     if (size !== undefined) {
-      setClauses.push(`size = $${paramIndex++}`);
-      queryValues.push(size);
+      updateFields.push(`size = $${idx++}`);
+      values.push(size);
     }
-    if (setClauses.length === 0) {
+
+    if (updateFields.length === 0) {
+      await client.query('ROLLBACK');
       return res.status(400).json({ message: 'No fields to update' });
     }
 
-    query += setClauses.join(', ');
-    query += ` WHERE id = $${paramIndex++} AND user_id = $${paramIndex++} RETURNING *`;
-    queryValues.push(itemId, req.user.id);
+    values.push(itemId, userId);
 
-    const result = await pool.query(query, queryValues);
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: 'Cart item not found or does not belong to user' });
-    }
+    const updateRes = await client.query(
+      `UPDATE cart_items 
+       SET ${updateFields.join(', ')} 
+       WHERE id = $${idx++} AND user_id = $${idx++}
+       RETURNING *`,
+      values
+    );
 
-    res.status(200).json({ message: 'Cart updated successfully', item: result.rows[0] });
+    await client.query('COMMIT');
+    res.status(200).json({
+      message: 'Cart item updated successfully and stock adjusted',
+      item: updateRes.rows[0],
+    });
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error('Error updating cart:', err);
     res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    client.release();
+  }
+});
+
+// Delete item from cart + restore stock
+router.delete('/cart/:itemId', authMiddleware, async (req, res) => {
+  const { itemId } = req.params;
+  const userId = req.user.id;
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const itemResult = await client.query(
+      'SELECT product_id, quantity FROM cart_items WHERE id = $1 AND user_id = $2',
+      [itemId, userId]
+    );
+
+    if (itemResult.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    const { product_id, quantity } = itemResult.rows[0];
+
+    await client.query('DELETE FROM cart_items WHERE id = $1 AND user_id = $2', [itemId, userId]);
+    await client.query('UPDATE products SET stock = stock + $1 WHERE id = $2', [quantity, product_id]);
+
+    await client.query('COMMIT');
+    res.status(200).json({ message: 'Item removed from cart and stock restored' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Error removing from cart:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    client.release();
   }
 });
 
 // ====================== ADDRESS ======================
 
-// Get user addresses
 router.get('/addresses', authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -165,12 +258,11 @@ router.get('/addresses', authMiddleware, async (req, res) => {
   }
 });
 
-// Add a new address
 router.post('/addresses', authMiddleware, async (req, res) => {
   const { fullName, phonenumber, line1, line2, city, state, pincode } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO address (user_id, full_name, phone, line1, line2, city, state, pincode) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      'INSERT INTO address (user_id, full_name, phone, line1, line2, city, state, pincode) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',
       [req.user.id, fullName, phonenumber, line1, line2, city, state, pincode]
     );
     res.status(201).json(result.rows[0]);
@@ -185,6 +277,7 @@ router.post('/addresses', authMiddleware, async (req, res) => {
 router.post('/checkout', authMiddleware, async (req, res) => {
   const { addressId, paymentMethod } = req.body;
   const client = await pool.connect();
+
   try {
     await client.query('BEGIN');
 
@@ -192,18 +285,30 @@ router.post('/checkout', authMiddleware, async (req, res) => {
       'SELECT product_id, quantity, size FROM cart_items WHERE user_id = $1',
       [req.user.id]
     );
+
     const cartItems = cartResult.rows;
     if (cartItems.length === 0) {
+      await client.query('ROLLBACK');
       return res.status(400).json({ message: 'Cart is empty' });
     }
 
     const productIds = cartItems.map(item => item.product_id);
     const productsResult = await client.query(
-      `SELECT id, price FROM products WHERE id = ANY($1)`,
+      `SELECT id, price, stock FROM products WHERE id = ANY($1)`,
       [productIds]
     );
+
     const products = productsResult.rows;
     const priceMap = new Map(products.map(p => [p.id, p.price]));
+
+    // Validate stock
+    for (const item of cartItems) {
+      const product = products.find(p => p.id === item.product_id);
+      if (!product || product.stock < item.quantity) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ message: `Insufficient stock for product ID ${item.product_id}` });
+      }
+    }
 
     let total = 0;
     cartItems.forEach(item => {
@@ -211,7 +316,7 @@ router.post('/checkout', authMiddleware, async (req, res) => {
     });
 
     const orderResult = await client.query(
-      'INSERT INTO orders (user_id, address_id, total, payment_method) VALUES ($1, $2, $3, $4) RETURNING id',
+      'INSERT INTO orders (user_id, address_id, total, payment_method) VALUES ($1,$2,$3,$4) RETURNING id',
       [req.user.id, addressId, total, paymentMethod]
     );
     const orderId = orderResult.rows[0].id;
@@ -221,15 +326,19 @@ router.post('/checkout', authMiddleware, async (req, res) => {
     let idx = 1;
 
     for (const it of cartItems) {
-      placeholders.push(`($${idx++}, $${idx++}, $${idx++}, $${idx++})`);
+      placeholders.push(`($${idx++},$${idx++},$${idx++},$${idx++})`);
       vals.push(orderId, it.product_id, it.quantity, it.size);
     }
 
-    const insertQuery = `
-      INSERT INTO order_items (order_id, product_id, quantity, size)
-      VALUES ${placeholders.join(',')}
-    `;
-    await client.query(insertQuery, vals);
+    await client.query(
+      `INSERT INTO order_items (order_id, product_id, quantity, size)
+       VALUES ${placeholders.join(',')}`,
+      vals
+    );
+
+    for (const item of cartItems) {
+      await client.query(`UPDATE products SET stock = stock - $1 WHERE id = $2`, [item.quantity, item.product_id]);
+    }
 
     await client.query('DELETE FROM cart_items WHERE user_id = $1', [req.user.id]);
     await client.query('COMMIT');
@@ -248,17 +357,15 @@ router.post('/checkout', authMiddleware, async (req, res) => {
 
 router.get('/orders', authMiddleware, async (req, res) => {
   try {
-    console.log('Fetching orders for user id:', req.user.id);
-
     const { rows } = await pool.query(
       `SELECT o.id AS order_id, o.total, o.created_at, o.payment_method, 
               json_agg(json_build_object(
-                  'product_name', p.name,
-                  'quantity', oi.quantity,
-                  'size', oi.size,
-                  'price', p.price,
-                  'image', p.image,
-                  'description', p.description
+                'product_name', p.name,
+                'quantity', oi.quantity,
+                'size', oi.size,
+                'price', p.price,
+                'image', p.image,
+                'description', p.description
               )) AS items
        FROM orders o
        JOIN order_items oi ON o.id = oi.order_id
@@ -268,14 +375,11 @@ router.get('/orders', authMiddleware, async (req, res) => {
        ORDER BY o.created_at DESC`,
       [req.user.id]
     );
-
-    console.log('Orders fetched:', rows);
     res.json(rows);
   } catch (err) {
-    console.error('Error fetching orders route:', err);
+    console.error('Error fetching orders:', err);
     res.status(500).json({ message: 'Server error fetching orders' });
   }
 });
-
 
 module.exports = router;
