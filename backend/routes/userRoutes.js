@@ -117,7 +117,7 @@ router.post('/cart', authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Update cart item + update stock
+// Update cart item + update stock
 router.put('/cart/:itemId', authMiddleware, async (req, res) => {
   const { itemId } = req.params;
   const { quantity, size } = req.body;
